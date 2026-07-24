@@ -1,11 +1,11 @@
 {
   "name": "Golf Oly Pay",
   "short_name": "Golf Oly Pay",
-  "description": "ゴルフ・オリンピックのポイント入力、抽選、最終精算アプリ",
+  "description": "4名×2組でプレーし、8名全員で精算するゴルフ・オリンピックアプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7f6",
+  "background_color": "#f4f7f5",
   "theme_color": "#0f5132",
   "icons": [
     {

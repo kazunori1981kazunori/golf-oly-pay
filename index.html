@@ -1,669 +1,175 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Golf Oly Pay</title>
-  <meta name="theme-color" content="#0f5132" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Golf Oly Pay" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./icon-180.png" />
-
-  <style>
-    :root{
-      --green:#0f5132;
-      --green2:#198754;
-      --bg:#f5f7f6;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#dfe5e2;
-      --danger:#b42318;
-      --gold:#d4a017;
-      --silver:#7c8794;
-      --bronze:#a86f32;
-      --iron:#44515e;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-    header{
-      background:linear-gradient(135deg,var(--green),var(--green2));
-      color:white;
-      padding:18px 16px;
-      position:sticky;
-      top:0;
-      z-index:10;
-      box-shadow:0 2px 8px rgba(0,0,0,.15);
-    }
-    header h1{margin:0;font-size:1.25rem}
-    header p{margin:4px 0 0;font-size:.82rem;opacity:.9}
-    main{max-width:980px;margin:auto;padding:14px}
-    .tabs{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
-      margin-bottom:12px;
-    }
-    .tab-btn{
-      border:none;
-      padding:10px 6px;
-      border-radius:10px;
-      background:#e6ece9;
-      font-weight:700;
-      cursor:pointer;
-      font-size:.83rem;
-    }
-    .tab-btn.active{background:var(--green);color:#fff}
-    .panel{display:none}
-    .panel.active{display:block}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
-      margin-bottom:12px;
-      box-shadow:0 1px 3px rgba(0,0,0,.04);
-    }
-    h2,h3{margin-top:0}
-    h2{font-size:1.1rem}
-    h3{font-size:1rem}
-    label{display:block;font-weight:700;font-size:.9rem;margin-bottom:5px}
-    input,select,button,textarea{
-      font:inherit;
-    }
-    input,select{
-      width:100%;
-      border:1px solid #cfd8d3;
-      border-radius:9px;
-      padding:10px;
-      background:#fff;
-    }
-    .grid{display:grid;gap:10px}
-    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .btn{
-      border:none;
-      border-radius:10px;
-      padding:10px 14px;
-      font-weight:800;
-      cursor:pointer;
-    }
-    .btn-primary{background:var(--green);color:#fff}
-    .btn-secondary{background:#e6ece9;color:var(--text)}
-    .btn-danger{background:#fee4e2;color:var(--danger)}
-    .btn-block{width:100%}
-    .player-row{
-      display:grid;
-      grid-template-columns:42px 1fr 42px;
-      gap:8px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-    .player-no{
-      width:34px;height:34px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      background:#e8f3ed;color:var(--green);font-weight:900;
-    }
-    .hole-head{
-      display:flex;justify-content:space-between;align-items:center;gap:8px;
-      margin-bottom:10px;
-    }
-    .hole-nav{display:flex;gap:6px}
-    .medal{
-      border-left:5px solid;
-      padding-left:10px;
-    }
-    .iron{border-color:var(--iron)}
-    .bronze{border-color:var(--bronze)}
-    .silver{border-color:var(--silver)}
-    .gold{border-color:var(--gold)}
-    .summary-table,.settle-table{
-      width:100%;border-collapse:collapse;font-size:.9rem;
-    }
-    th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}
-    th{background:#f0f4f2}
-    .positive{color:#087443;font-weight:900}
-    .negative{color:var(--danger);font-weight:900}
-    .muted{color:var(--muted);font-size:.85rem}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{
-      background:#eef3f0;border:1px solid var(--line);
-      border-radius:999px;padding:5px 9px;font-size:.82rem;
-    }
-    .selected-hole{background:#dff4e8;border-color:#8ad2a7;color:#0d5d35;font-weight:800}
-    .notice{
-      padding:10px 12px;border-radius:10px;background:#fff4ce;border:1px solid #f0d36d;
-      font-size:.88rem;
-    }
-    .success{
-      padding:10px 12px;border-radius:10px;background:#dcfae6;border:1px solid #86d49f;
-      color:#0d5d35;font-weight:700;
-    }
-    footer{padding:20px;text-align:center;color:var(--muted);font-size:.8rem}
-    @media(max-width:700px){
-      .tabs{grid-template-columns:repeat(5,1fr)}
-      .tab-btn{font-size:.72rem;padding:9px 2px}
-      .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
-      main{padding:10px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Golf Oly Pay">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<title>Golf Oly Pay</title>
+<style>
+:root{--g:#0f5132;--g2:#198754;--bg:#f4f7f5;--card:#fff;--line:#dce5df;--txt:#1f2937;--muted:#6b7280;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt)}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;padding:18px 16px calc(14px + env(safe-area-inset-top));box-shadow:0 2px 10px #0002}
+header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:13px;opacity:.9}
+main{max-width:900px;margin:auto;padding:12px 12px calc(20px + env(safe-area-inset-bottom))}
+nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+nav button{border:0;border-radius:10px;padding:10px 3px;font-weight:800;background:#e5ece8;font-size:12px}
+nav button.active{background:var(--g);color:#fff}
+section{display:none}section.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+h2,h3{margin-top:0}h2{font-size:18px}h3{font-size:16px}
+.grid{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+label{display:block;font-weight:800;font-size:13px;margin-bottom:5px}
+input,select,button{font:inherit}input,select{width:100%;padding:11px;border-radius:10px;border:1px solid #ccd8d1;background:#fff}
+.btn{border:0;border-radius:11px;padding:12px 14px;font-weight:900}.primary{background:var(--g);color:#fff}.secondary{background:#e6ece9}.danger{background:#fee4e2;color:var(--red)}.block{width:100%}
+.player{display:grid;grid-template-columns:34px 1fr 92px;gap:8px;align-items:center;margin-bottom:8px}
+.no{height:32px;width:32px;border-radius:50%;display:grid;place-items:center;background:#e3f1e8;color:var(--g);font-weight:900}
+.groupSwitch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.groupSwitch button{border:2px solid transparent;border-radius:12px;padding:12px;font-weight:900}.groupSwitch .a{background:#e5f4ea}.groupSwitch .b{background:#e9effa}.groupSwitch .active{border-color:var(--g)}
+.holeHead{display:flex;justify-content:space-between;gap:8px;align-items:center}.navBtns{display:flex;gap:6px}
+.medal{border-left:5px solid;padding-left:10px}.iron{border-color:#44515e}.bronze{border-color:#a86f32}.silver{border-color:#7c8794}.gold{border-color:#d4a017}
+.note{padding:10px 12px;border-radius:10px;background:#fff4ce;border:1px solid #efd26d;font-size:13px}.ok{padding:10px 12px;border-radius:10px;background:#dcfae6;border:1px solid #86d49f;color:#0d5d35;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:#eef3f0}.chip.done{background:#dff4e8;border-color:#8ad2a7}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}th{background:#f0f4f2}
+.pos{color:#087443;font-weight:900}.neg{color:var(--red);font-weight:900}.muted{color:var(--muted);font-size:12px}
+.pay{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:#fff}
+@media(max-width:650px){.g2,.g4{grid-template-columns:1fr}.player{grid-template-columns:32px 1fr 84px}}
+</style>
 </head>
 <body>
-<header>
-  <h1>Golf Oly Pay</h1>
-  <p>ゴルフ・オリンピックの入力、抽選、精算</p>
-</header>
-
+<header><h1>Golf Oly Pay</h1><p>4名×2組でプレーし、8名全員で精算</p></header>
 <main>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="setup">設定</button>
-    <button class="tab-btn" data-tab="input">入力</button>
-    <button class="tab-btn" data-tab="status">状況</button>
-    <button class="tab-btn" data-tab="draw">抽選</button>
-    <button class="tab-btn" data-tab="settlement">精算</button>
-  </div>
+<nav>
+<button class="active" data-tab="setup">設定</button>
+<button data-tab="input">入力</button>
+<button data-tab="status">状況</button>
+<button data-tab="draw">抽選</button>
+<button data-tab="settle">精算</button>
+</nav>
 
-  <section id="setup" class="panel active">
-    <div class="card">
-      <h2>ゲーム設定</h2>
-      <div class="grid grid-2">
-        <div>
-          <label>参加人数</label>
-          <select id="playerCount"></select>
-        </div>
-        <div>
-          <label>1ポイントの金額（USD）</label>
-          <input id="rate" type="number" min="0" step="0.25" value="0.50" />
-        </div>
-        <div>
-          <label>ホール数</label>
-          <select id="holeCount">
-            <option value="18">18ホール</option>
-            <option value="9">9ホール</option>
-          </select>
-        </div>
-        <div>
-          <label>精算対象</label>
-          <select id="targetMode">
-            <option value="all">全ホール</option>
-            <option value="draw">抽選ホールのみ</option>
-          </select>
-        </div>
-      </div>
-    </div>
+<section id="setup" class="active">
+<div class="card">
+<h2>基本設定</h2>
+<div class="grid g2">
+<div><label>参加人数</label><input value="8人（4名×2組）" disabled></div>
+<div><label>1ポイントの金額（USD）</label><input id="rate" type="number" value="0.5" min="0" step="0.25"></div>
+<div><label>ホール数</label><select id="holes"><option value="18">18ホール</option><option value="9">9ホール</option></select></div>
+<div><label>精算対象</label><select id="target"><option value="all">全ホール</option><option value="draw">抽選ホールのみ</option></select></div>
+</div>
+</div>
+<div class="card">
+<h2>プレーヤーと組分け</h2>
+<div id="players"></div>
+<div id="groupMsg"></div>
+<button class="btn primary block" id="saveSetup">保存して入力へ</button>
+</div>
+<div class="card">
+<h3>ポイント</h3>
+<div class="grid g4">
+<div><label>鉄</label><input id="pIron" type="number" value="1"></div>
+<div><label>銅</label><input id="pBronze" type="number" value="2"></div>
+<div><label>銀</label><input id="pSilver" type="number" value="3"></div>
+<div><label>金</label><input id="pGold" type="number" value="4"></div>
+</div>
+<p class="muted">各組で獲得したポイントを合算し、最後は8名全員で精算します。</p>
+</div>
+<div class="card"><button class="btn danger block" id="reset">全データを初期化</button></div>
+</section>
 
-    <div class="card">
-      <h2>プレーヤー</h2>
-      <div id="players"></div>
-      <button class="btn btn-primary btn-block" id="saveSetup">設定を保存して開始</button>
-    </div>
+<section id="input">
+<div class="groupSwitch">
+<button class="a active" data-group="A">A組</button>
+<button class="b" data-group="B">B組</button>
+</div>
+<div class="card">
+<div class="holeHead">
+<div><h2 id="holeTitle">A組・1H</h2><div id="members" class="muted"></div></div>
+<div class="navBtns"><button class="btn secondary" id="prev">前へ</button><button class="btn secondary" id="next">次へ</button></div>
+</div>
+<div class="grid">
+<div class="medal iron"><label>鉄</label><select id="iron"></select></div>
+<div class="medal bronze"><label>銅</label><select id="bronze"></select></div>
+<div class="medal silver"><label>銀</label><select id="silver"></select></div>
+<div class="medal gold"><label>金</label><select id="gold"></select></div>
+</div>
+<div class="grid g2" style="margin-top:12px">
+<button class="btn primary" id="saveHole">このホールを保存</button>
+<button class="btn danger" id="clearHole">消去</button>
+</div>
+<div id="saved" style="margin-top:10px"></div>
+</div>
+<div class="card"><h3>入力済みホール</h3><div id="chips" class="chips"></div></div>
+</section>
 
-    <div class="card">
-      <h3>ポイント</h3>
-      <div class="grid grid-4">
-        <div><label>鉄</label><input id="ironPoint" type="number" value="1" min="0"></div>
-        <div><label>銅</label><input id="bronzePoint" type="number" value="2" min="0"></div>
-        <div><label>銀</label><input id="silverPoint" type="number" value="3" min="0"></div>
-        <div><label>金</label><input id="goldPoint" type="number" value="4" min="0"></div>
-      </div>
-      <p class="muted">各ポイントは、獲得者が他の全プレーヤーから同点数を受け取る方式です。</p>
-    </div>
+<section id="status">
+<div class="card">
+<h2>8名全員の状況</h2><div id="statusNote" class="note"></div>
+<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>順位</th><th>組</th><th>名前</th><th>pt</th><th>収支</th></tr></thead><tbody id="statusBody"></tbody></table></div>
+</div>
+</section>
 
-    <div class="card">
-      <button class="btn btn-danger btn-block" id="resetAll">全データを初期化</button>
-    </div>
-  </section>
+<section id="draw">
+<div class="card">
+<h2>対象ホール抽選</h2>
+<div class="grid g2">
+<div><label>抽選ホール数</label><input id="drawCount" type="number" value="8" min="1"></div>
+<div><label>重複</label><select id="dup"><option value="no">なし</option><option value="yes">あり</option></select></div>
+</div>
+<button class="btn primary block" style="margin-top:12px" id="runDraw">抽選する</button>
+<div id="drawResult" style="margin-top:10px"></div>
+</div>
+</section>
 
-  <section id="input" class="panel">
-    <div class="card">
-      <div class="hole-head">
-        <h2 id="holeTitle">第1ホール</h2>
-        <div class="hole-nav">
-          <button class="btn btn-secondary" id="prevHole">前へ</button>
-          <button class="btn btn-secondary" id="nextHole">次へ</button>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="medal iron">
-          <label>鉄（1pt）</label>
-          <select id="ironSelect"></select>
-        </div>
-        <div class="medal bronze">
-          <label>銅（2pt）</label>
-          <select id="bronzeSelect"></select>
-        </div>
-        <div class="medal silver">
-          <label>銀（3pt）</label>
-          <select id="silverSelect"></select>
-        </div>
-        <div class="medal gold">
-          <label>金（4pt）</label>
-          <select id="goldSelect"></select>
-        </div>
-      </div>
-
-      <div style="margin-top:12px" class="grid grid-2">
-        <button class="btn btn-primary" id="saveHole">このホールを保存</button>
-        <button class="btn btn-danger" id="clearHole">このホールを消去</button>
-      </div>
-      <div id="holeSaved" style="margin-top:10px"></div>
-    </div>
-
-    <div class="card">
-      <h3>入力済みホール</h3>
-      <div id="enteredHoles" class="chips"></div>
-    </div>
-  </section>
-
-  <section id="status" class="panel">
-    <div class="card">
-      <h2>現在の状況</h2>
-      <div id="statusNote" class="notice"></div>
-      <div style="overflow:auto;margin-top:10px">
-        <table class="summary-table">
-          <thead><tr><th>順位</th><th>プレーヤー</th><th>獲得pt</th><th>収支</th></tr></thead>
-          <tbody id="statusBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>ホール別履歴</h3>
-      <div id="history"></div>
-    </div>
-  </section>
-
-  <section id="draw" class="panel">
-    <div class="card">
-      <h2>対象ホール抽選</h2>
-      <div class="grid grid-2">
-        <div>
-          <label>抽選するホール数</label>
-          <input id="drawCount" type="number" min="1" value="8">
-        </div>
-        <div>
-          <label>重複</label>
-          <select id="duplicateMode">
-            <option value="no">なし</option>
-            <option value="yes">あり</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-primary btn-block" style="margin-top:12px" id="runDraw">抽選する</button>
-      <div id="drawResult" style="margin-top:12px"></div>
-      <p class="muted">抽選ホールのみ精算する場合は、設定画面の「精算対象」を「抽選ホールのみ」にしてください。</p>
-    </div>
-  </section>
-
-  <section id="settlement" class="panel">
-    <div class="card">
-      <h2>最終結果</h2>
-      <div id="settlementNote"></div>
-      <div style="overflow:auto;margin-top:10px">
-        <table class="settle-table">
-          <thead><tr><th>プレーヤー</th><th>最終収支</th></tr></thead>
-          <tbody id="balanceBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>誰が誰にいくら払うか</h2>
-      <div id="payments"></div>
-      <button class="btn btn-secondary btn-block" style="margin-top:12px" id="copyResult">結果をコピー</button>
-    </div>
-  </section>
+<section id="settle">
+<div class="card">
+<h2>最終収支</h2>
+<div style="overflow:auto"><table><thead><tr><th>組</th><th>名前</th><th>収支</th></tr></thead><tbody id="balanceBody"></tbody></table></div>
+</div>
+<div class="card">
+<h2>誰が誰にいくら払うか</h2><div id="payments"></div>
+<button class="btn secondary block" id="copy">結果をコピー</button>
+</div>
+</section>
 </main>
 
-<footer>データはこの端末のブラウザ内に保存されます。</footer>
-
 <script>
-const $ = (id)=>document.getElementById(id);
-const STORE_KEY = "golfOlyPayDataV1";
-
-const defaultState = {
-  playerCount: 8,
-  players: ["Player 1","Player 2","Player 3","Player 4","Player 5","Player 6","Player 7","Player 8"],
-  rate: 0.5,
-  holeCount: 18,
-  targetMode: "all",
-  points: {iron:1, bronze:2, silver:3, gold:4},
-  holes: {},
-  draw: []
-};
-
-let state = loadState();
-let currentHole = 1;
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    return raw ? {...defaultState, ...JSON.parse(raw)} : structuredClone(defaultState);
-  }catch(e){ return structuredClone(defaultState); }
-}
-function saveState(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
-
+const $=id=>document.getElementById(id), KEY="golfOlyPayIPhoneV1";
+const def={players:["Player 1","Player 2","Player 3","Player 4","Player 5","Player 6","Player 7","Player 8"],groups:["A","A","A","A","B","B","B","B"],rate:.5,holeCount:18,target:"all",points:{iron:1,bronze:2,silver:3,gold:4},data:{A:{},B:{}},draw:[]};
+let st=load(),grp="A",hole=1;
+function clone(){return JSON.parse(JSON.stringify(def))}function load(){try{return Object.assign(clone(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return clone()}}function save(){localStorage.setItem(KEY,JSON.stringify(st))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function money(v){return (v>0?"+":v<0?"-":"")+"$"+Math.abs(v).toFixed(2)}
+function members(g){return st.groups.map((x,i)=>x===g?i:null).filter(x=>x!==null)}
+function opts(g,sel=""){let h='<option value="">なし</option>';members(g).forEach(i=>h+=`<option value="${i}" ${String(i)===sel?"selected":""}>${esc(st.players[i])}</option>`);return h}
 function init(){
-  for(let i=2;i<=8;i++){
-    const opt=document.createElement("option");
-    opt.value=i; opt.textContent=i+"人";
-    $("playerCount").appendChild(opt);
-  }
-  $("playerCount").value=state.playerCount;
-  $("rate").value=state.rate;
-  $("holeCount").value=state.holeCount;
-  $("targetMode").value=state.targetMode;
-  $("ironPoint").value=state.points.iron;
-  $("bronzePoint").value=state.points.bronze;
-  $("silverPoint").value=state.points.silver;
-  $("goldPoint").value=state.points.gold;
-  $("drawCount").value=Math.min(state.playerCount,state.holeCount);
-
-  renderPlayers();
-  renderHole();
-  renderStatus();
-  renderDraw();
-  renderSettlement();
-  bindEvents();
+$("rate").value=st.rate;$("holes").value=st.holeCount;$("target").value=st.target;$("pIron").value=st.points.iron;$("pBronze").value=st.points.bronze;$("pSilver").value=st.points.silver;$("pGold").value=st.points.gold;
+renderPlayers();renderHole();renderStatus();renderDraw();renderSettle();
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");if(b.dataset.tab==="status")renderStatus();if(b.dataset.tab==="settle")renderSettle()});
+document.querySelectorAll(".groupSwitch button").forEach(b=>b.onclick=()=>{grp=b.dataset.group;document.querySelectorAll(".groupSwitch button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderHole()});
+$("saveSetup").onclick=saveSetup;$("prev").onclick=()=>{hole=Math.max(1,hole-1);renderHole()};$("next").onclick=()=>{hole=Math.min(st.holeCount,hole+1);renderHole()};
+$("saveHole").onclick=saveHole;$("clearHole").onclick=()=>{delete st.data[grp][hole];save();renderHole()};
+$("runDraw").onclick=runDraw;$("copy").onclick=copyResult;$("reset").onclick=()=>{if(confirm("すべて削除しますか？")){localStorage.removeItem(KEY);location.reload()}};
 }
-
-function bindEvents(){
-  document.querySelectorAll(".tab-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-      document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-      btn.classList.add("active");
-      $(btn.dataset.tab).classList.add("active");
-      if(btn.dataset.tab==="status") renderStatus();
-      if(btn.dataset.tab==="settlement") renderSettlement();
-    });
-  });
-
-  $("playerCount").addEventListener("change",()=>{
-    state.playerCount=Number($("playerCount").value);
-    while(state.players.length<state.playerCount) state.players.push("Player "+(state.players.length+1));
-    state.players=state.players.slice(0,state.playerCount);
-    $("drawCount").value=Math.min(state.playerCount,state.holeCount);
-    renderPlayers();
-  });
-
-  $("saveSetup").addEventListener("click",()=>{
-    const inputs=[...document.querySelectorAll(".player-name")];
-    state.playerCount=Number($("playerCount").value);
-    state.players=inputs.map((x,i)=>x.value.trim()||("Player "+(i+1)));
-    state.rate=Number($("rate").value)||0;
-    state.holeCount=Number($("holeCount").value);
-    state.targetMode=$("targetMode").value;
-    state.points={
-      iron:Number($("ironPoint").value)||0,
-      bronze:Number($("bronzePoint").value)||0,
-      silver:Number($("silverPoint").value)||0,
-      gold:Number($("goldPoint").value)||0
-    };
-    if(currentHole>state.holeCount) currentHole=state.holeCount;
-    saveState();
-    renderHole(); renderStatus(); renderSettlement();
-    document.querySelector('[data-tab="input"]').click();
-  });
-
-  $("prevHole").addEventListener("click",()=>{currentHole=Math.max(1,currentHole-1);renderHole();});
-  $("nextHole").addEventListener("click",()=>{currentHole=Math.min(state.holeCount,currentHole+1);renderHole();});
-
-  $("saveHole").addEventListener("click",()=>{
-    const vals={
-      iron:$("ironSelect").value,
-      bronze:$("bronzeSelect").value,
-      silver:$("silverSelect").value,
-      gold:$("goldSelect").value
-    };
-    const chosen=Object.values(vals).filter(Boolean);
-    if(new Set(chosen).size!==chosen.length){
-      alert("同じプレーヤーを複数のメダルに設定できません。");
-      return;
-    }
-    state.holes[currentHole]=vals;
-    saveState();
-    $("holeSaved").innerHTML='<div class="success">保存しました。</div>';
-    renderEnteredHoles();
-    setTimeout(()=>{$("holeSaved").innerHTML="";},1200);
-  });
-
-  $("clearHole").addEventListener("click",()=>{
-    delete state.holes[currentHole];
-    saveState(); renderHole();
-  });
-
-  $("runDraw").addEventListener("click",()=>{
-    const count=Math.max(1,Math.min(Number($("drawCount").value)||1,state.holeCount));
-    const dup=$("duplicateMode").value==="yes";
-    const arr=[];
-    if(dup){
-      for(let i=0;i<count;i++) arr.push(Math.floor(Math.random()*state.holeCount)+1);
-    }else{
-      const pool=Array.from({length:state.holeCount},(_,i)=>i+1);
-      for(let i=pool.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [pool[i],pool[j]]=[pool[j],pool[i]];
-      }
-      arr.push(...pool.slice(0,count));
-    }
-    state.draw=arr.sort((a,b)=>a-b);
-    saveState(); renderDraw(); renderStatus(); renderSettlement();
-  });
-
-  $("copyResult").addEventListener("click", async()=>{
-    const text=buildCopyText();
-    try{
-      await navigator.clipboard.writeText(text);
-      alert("精算結果をコピーしました。");
-    }catch(e){
-      prompt("以下をコピーしてください。",text);
-    }
-  });
-
-  $("resetAll").addEventListener("click",()=>{
-    if(confirm("すべての設定・入力・抽選結果を削除しますか？")){
-      localStorage.removeItem(STORE_KEY);
-      state=structuredClone(defaultState);
-      location.reload();
-    }
-  });
-}
-
-function renderPlayers(){
-  const wrap=$("players"); wrap.innerHTML="";
-  for(let i=0;i<state.playerCount;i++){
-    const row=document.createElement("div");
-    row.className="player-row";
-    row.innerHTML=`<div class="player-no">${i+1}</div>
-      <input class="player-name" value="${escapeHtml(state.players[i]||("Player "+(i+1)))}">
-      <div></div>`;
-    wrap.appendChild(row);
-  }
-}
-
-function playerOptions(selected=""){
-  let html='<option value="">なし</option>';
-  state.players.forEach((p,i)=>{
-    const val=String(i);
-    html+=`<option value="${val}" ${selected===val?"selected":""}>${escapeHtml(p)}</option>`;
-  });
-  return html;
-}
-
-function renderHole(){
-  $("holeTitle").textContent=`第${currentHole}ホール`;
-  const data=state.holes[currentHole]||{};
-  $("ironSelect").innerHTML=playerOptions(data.iron??"");
-  $("bronzeSelect").innerHTML=playerOptions(data.bronze??"");
-  $("silverSelect").innerHTML=playerOptions(data.silver??"");
-  $("goldSelect").innerHTML=playerOptions(data.gold??"");
-  $("ironSelect").parentElement.querySelector("label").textContent=`鉄（${state.points.iron}pt）`;
-  $("bronzeSelect").parentElement.querySelector("label").textContent=`銅（${state.points.bronze}pt）`;
-  $("silverSelect").parentElement.querySelector("label").textContent=`銀（${state.points.silver}pt）`;
-  $("goldSelect").parentElement.querySelector("label").textContent=`金（${state.points.gold}pt）`;
-  renderEnteredHoles();
-}
-
-function renderEnteredHoles(){
-  const wrap=$("enteredHoles"); wrap.innerHTML="";
-  for(let i=1;i<=state.holeCount;i++){
-    const b=document.createElement("button");
-    b.className="chip"+(state.holes[i]?" selected-hole":"");
-    b.textContent=i+"H";
-    b.addEventListener("click",()=>{currentHole=i;renderHole();});
-    wrap.appendChild(b);
-  }
-}
-
-function getTargetHoleList(){
-  if(state.targetMode==="draw"){
-    return state.draw.length?state.draw:[];
-  }
-  return Array.from({length:state.holeCount},(_,i)=>i+1);
-}
-
-function calculate(){
-  const n=state.playerCount;
-  const points=Array(n).fill(0);
-  const targetHoles=getTargetHoleList();
-  const multiplicity={};
-  targetHoles.forEach(h=>multiplicity[h]=(multiplicity[h]||0)+1);
-
-  Object.entries(multiplicity).forEach(([h,mult])=>{
-    const rec=state.holes[h];
-    if(!rec) return;
-    for(const medal of ["iron","bronze","silver","gold"]){
-      if(rec[medal]!==undefined && rec[medal]!==null && rec[medal]!==""){
-        const idx=Number(rec[medal]);
-        points[idx]+=state.points[medal]*mult;
-      }
-    }
-  });
-
-  const balances=points.map((p,i)=>{
-    const ownReceive=p*(n-1);
-    const paidToOthers=points.reduce((s,x,j)=>s+(j===i?0:x),0);
-    return (ownReceive-paidToOthers)*state.rate;
-  });
-
-  return {points,balances,targetHoles};
-}
-
-function renderStatus(){
-  const {points,balances,targetHoles}=calculate();
-  $("statusNote").textContent = state.targetMode==="draw"
-    ? (state.draw.length?`抽選された ${state.draw.length} ホールを集計しています。`:"抽選ホールが未設定です。抽選画面でホールを選んでください。")
-    : `全${state.holeCount}ホールを集計しています。`;
-
-  const rows=state.players.map((p,i)=>({name:p,pt:points[i],bal:balances[i]}))
-    .sort((a,b)=>b.bal-a.bal);
-  $("statusBody").innerHTML=rows.map((r,i)=>`
-    <tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.pt}</td>
-    <td class="${r.bal>=0?"positive":"negative"}">${fmtMoney(r.bal)}</td></tr>`).join("");
-
-  const hist=[];
-  for(let h=1;h<=state.holeCount;h++){
-    const rec=state.holes[h];
-    if(!rec) continue;
-    const parts=[];
-    for(const medal of ["iron","bronze","silver","gold"]){
-      const idx=rec[medal];
-      if(idx!=="" && idx!==undefined) parts.push(`${jpMedal(medal)}: ${escapeHtml(state.players[Number(idx)])}`);
-    }
-    hist.push(`<div class="card" style="padding:10px;margin-bottom:8px"><strong>${h}H</strong><br><span class="muted">${parts.join(" / ")||"入力なし"}</span></div>`);
-  }
-  $("history").innerHTML=hist.length?hist.join(""):'<p class="muted">まだ入力がありません。</p>';
-}
-
-function renderDraw(){
-  if(!state.draw.length){
-    $("drawResult").innerHTML='<p class="muted">まだ抽選していません。</p>';
-    return;
-  }
-  $("drawResult").innerHTML=`<div class="success">対象ホール：${state.draw.map(h=>h+"H").join("、")}</div>`;
-}
-
-function minimizePayments(balances){
-  const creditors=[], debtors=[];
-  balances.forEach((b,i)=>{
-    const v=Math.round(b*100)/100;
-    if(v>0.009) creditors.push({i,amount:v});
-    else if(v<-0.009) debtors.push({i,amount:-v});
-  });
-  creditors.sort((a,b)=>b.amount-a.amount);
-  debtors.sort((a,b)=>b.amount-a.amount);
-  const payments=[];
-  let ci=0,di=0;
-  while(ci<creditors.length && di<debtors.length){
-    const c=creditors[ci], d=debtors[di];
-    const amt=Math.min(c.amount,d.amount);
-    payments.push({from:d.i,to:c.i,amount:Math.round(amt*100)/100});
-    c.amount=Math.round((c.amount-amt)*100)/100;
-    d.amount=Math.round((d.amount-amt)*100)/100;
-    if(c.amount<0.01) ci++;
-    if(d.amount<0.01) di++;
-  }
-  return payments;
-}
-
-function renderSettlement(){
-  const {balances}=calculate();
-  $("settlementNote").innerHTML = state.targetMode==="draw" && !state.draw.length
-    ? '<div class="notice">抽選ホールが未設定のため、現在の精算額は0です。</div>'
-    : '';
-  $("balanceBody").innerHTML=state.players.map((p,i)=>`
-    <tr><td>${escapeHtml(p)}</td><td class="${balances[i]>=0?"positive":"negative"}">${fmtMoney(balances[i])}</td></tr>
-  `).join("");
-
-  const pays=minimizePayments(balances);
-  $("payments").innerHTML=pays.length
-    ? pays.map(x=>`<div class="card" style="padding:10px;margin-bottom:8px">
-        <strong>${escapeHtml(state.players[x.from])}</strong> → <strong>${escapeHtml(state.players[x.to])}</strong>
-        <span style="float:right;font-weight:900">${fmtMoney(x.amount)}</span>
-      </div>`).join("")
-    : '<div class="success">支払いはありません。</div>';
-}
-
-function buildCopyText(){
-  const {balances}=calculate();
-  const pays=minimizePayments(balances);
-  let t="Golf Oly Pay 精算結果\n\n";
-  state.players.forEach((p,i)=>{t+=`${p}: ${fmtMoney(balances[i])}\n`;});
-  t+="\n支払い\n";
-  if(!pays.length) t+="支払いなし\n";
-  else pays.forEach(x=>{t+=`${state.players[x.from]} → ${state.players[x.to]}: ${fmtMoney(x.amount)}\n`;});
-  return t;
-}
-
-function fmtMoney(v){
-  const sign=v>0?"+":v<0?"-":"";
-  return sign+"$"+Math.abs(v).toFixed(2);
-}
-function jpMedal(m){return {iron:"鉄",bronze:"銅",silver:"銀",gold:"金"}[m];}
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-}
-
+function renderPlayers(){const w=$("players");w.innerHTML="";st.players.forEach((p,i)=>{w.innerHTML+=`<div class="player"><div class="no">${i+1}</div><input class="pname" value="${esc(p)}"><select class="pgroup"><option value="A" ${st.groups[i]==="A"?"selected":""}>A組</option><option value="B" ${st.groups[i]==="B"?"selected":""}>B組</option></select></div>`});document.querySelectorAll(".pgroup").forEach(x=>x.onchange=groupCount);groupCount()}
+function groupCount(){const a=[...document.querySelectorAll(".pgroup")].filter(x=>x.value==="A").length,b=8-a;$("groupMsg").innerHTML=a===4?'<div class="ok">A組4名・B組4名です。</div>':`<div class="note">現在 A組${a}名／B組${b}名。各4名にしてください。</div>`}
+function saveSetup(){const gs=[...document.querySelectorAll(".pgroup")].map(x=>x.value);if(gs.filter(x=>x==="A").length!==4){alert("A組4名、B組4名にしてください。");return}st.players=[...document.querySelectorAll(".pname")].map((x,i)=>x.value.trim()||`Player ${i+1}`);st.groups=gs;st.rate=Number($("rate").value)||0;st.holeCount=Number($("holes").value);st.target=$("target").value;st.points={iron:Number($("pIron").value)||0,bronze:Number($("pBronze").value)||0,silver:Number($("pSilver").value)||0,gold:Number($("pGold").value)||0};save();document.querySelector('[data-tab="input"]').click();renderHole()}
+function renderHole(){const d=st.data[grp][hole]||{};$("holeTitle").textContent=`${grp}組・${hole}H`;$("members").textContent=members(grp).map(i=>st.players[i]).join("、");$("iron").innerHTML=opts(grp,d.iron??"");$("bronze").innerHTML=opts(grp,d.bronze??"");$("silver").innerHTML=opts(grp,d.silver??"");$("gold").innerHTML=opts(grp,d.gold??"");["iron","bronze","silver","gold"].forEach(k=>$(k).parentElement.querySelector("label").textContent=`${{iron:"鉄",bronze:"銅",silver:"銀",gold:"金"}[k]}（${st.points[k]}pt）`);renderChips()}
+function saveHole(){const d={iron:$("iron").value,bronze:$("bronze").value,silver:$("silver").value,gold:$("gold").value},v=Object.values(d).filter(Boolean);if(new Set(v).size!==v.length){alert("同じ人を複数選べません。");return}st.data[grp][hole]=d;save();$("saved").innerHTML='<div class="ok">保存しました。</div>';renderChips();setTimeout(()=>$("saved").innerHTML="",1000)}
+function renderChips(){const w=$("chips");w.innerHTML="";for(let i=1;i<=st.holeCount;i++){const b=document.createElement("button");b.className="chip"+(st.data[grp][i]?" done":"");b.textContent=i+"H";b.onclick=()=>{hole=i;renderHole()};w.appendChild(b)}}
+function targets(){return st.target==="draw"?st.draw:Array.from({length:st.holeCount},(_,i)=>i+1)}
+function calc(){const pts=Array(8).fill(0),m={};targets().forEach(h=>m[h]=(m[h]||0)+1);["A","B"].forEach(g=>Object.entries(m).forEach(([h,n])=>{const d=st.data[g][h];if(!d)return;["iron","bronze","silver","gold"].forEach(k=>{if(d[k]!=="")pts[Number(d[k])]+=st.points[k]*n})}));const bal=pts.map((p,i)=>(p*7-pts.reduce((s,x,j)=>s+(j===i?0:x),0))*st.rate);return{pts,bal}}
+function renderStatus(){const {pts,bal}=calc();$("statusNote").textContent=st.target==="draw"?(st.draw.length?`抽選${st.draw.length}ホールを集計中`:"抽選未実施"):`全${st.holeCount}ホールを集計中`;const rows=st.players.map((n,i)=>({n,i,g:st.groups[i],p:pts[i],b:bal[i]})).sort((a,b)=>b.b-a.b);$("statusBody").innerHTML=rows.map((r,k)=>`<tr><td>${k+1}</td><td>${r.g}</td><td>${esc(r.n)}</td><td>${r.p}</td><td class="${r.b>=0?"pos":"neg"}">${money(r.b)}</td></tr>`).join("")}
+function runDraw(){const c=Math.max(1,Math.min(Number($("drawCount").value)||1,st.holeCount)),dup=$("dup").value==="yes",a=[];if(dup){for(let i=0;i<c;i++)a.push(Math.floor(Math.random()*st.holeCount)+1)}else{const p=Array.from({length:st.holeCount},(_,i)=>i+1);for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}a.push(...p.slice(0,c))}st.draw=a.sort((a,b)=>a-b);save();renderDraw()}
+function renderDraw(){$("drawResult").innerHTML=st.draw.length?`<div class="ok">${st.draw.map(x=>x+"H").join("、")}</div>`:'<div class="muted">まだ抽選していません。</div>'}
+function payments(bal){const c=[],d=[];bal.forEach((x,i)=>{x=Math.round(x*100)/100;if(x>.009)c.push({i,a:x});else if(x<-.009)d.push({i,a:-x})});c.sort((a,b)=>b.a-a.a);d.sort((a,b)=>b.a-a.a);const p=[];let i=0,j=0;while(i<c.length&&j<d.length){const a=Math.min(c[i].a,d[j].a);p.push({f:d[j].i,t:c[i].i,a});c[i].a-=a;d[j].a-=a;if(c[i].a<.01)i++;if(d[j].a<.01)j++}return p}
+function renderSettle(){const {bal}=calc();$("balanceBody").innerHTML=st.players.map((n,i)=>`<tr><td>${st.groups[i]}</td><td>${esc(n)}</td><td class="${bal[i]>=0?"pos":"neg"}">${money(bal[i])}</td></tr>`).join("");const p=payments(bal);$("payments").innerHTML=p.length?p.map(x=>`<div class="pay"><span><strong>${esc(st.players[x.f])}</strong> → <strong>${esc(st.players[x.t])}</strong></span><strong>${money(x.a)}</strong></div>`).join(""):'<div class="ok">支払いはありません。</div>'}
+async function copyResult(){const {bal}=calc(),p=payments(bal);let t="Golf Oly Pay\n\n";st.players.forEach((n,i)=>t+=`${st.groups[i]}組 ${n}: ${money(bal[i])}\n`);t+="\n支払い\n";p.forEach(x=>t+=`${st.players[x.f]} → ${st.players[x.t]}: ${money(x.a)}\n`);try{await navigator.clipboard.writeText(t);alert("コピーしました。")}catch{prompt("コピーしてください",t)}}
 init();
 </script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(console.error);
-  });
-}
-</script>
-
+<script>if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}</script>
 </body>
 </html>
