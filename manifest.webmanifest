@@ -1,7 +1,7 @@
 {
   "name": "Golf Oly Pay",
   "short_name": "Golf Oly Pay",
-  "description": "名簿から参加者を選択できるゴルフ・オリンピック精算アプリ",
+  "description": "履歴・累計グラフ対応ゴルフ精算アプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
