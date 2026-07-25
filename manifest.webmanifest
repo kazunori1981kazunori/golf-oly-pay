@@ -1,7 +1,7 @@
 {
   "name": "Golf Oly Pay",
   "short_name": "Golf Oly Pay",
-  "description": "4名×2組でプレーし、8名全員で精算するゴルフ・オリンピックアプリ",
+  "description": "人数と組数を自由に設定できるゴルフ・オリンピック精算アプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
