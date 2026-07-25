@@ -1,12 +1,208 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f5132"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png"><title>Golf Oly Pay</title><style>
-:root{--g:#0f5132;--bg:#f4f7f5;--line:#dce5df;--red:#b42318}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#1f2937}header{background:linear-gradient(135deg,#0f5132,#198754);color:#fff;padding:18px 16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:13px}main{max-width:960px;margin:auto;padding:12px}nav{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px}nav button{border:0;border-radius:10px;padding:10px 2px;font-weight:800;background:#e5ece8;font-size:11px}nav button.active{background:var(--g);color:#fff}section{display:none}section.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.grid{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}label{display:block;font-weight:800;font-size:13px;margin-bottom:5px}input,select,button{font:inherit}input,select{width:100%;padding:10px;border:1px solid #ccd8d1;border-radius:10px;background:#fff}.btn{border:0;border-radius:10px;padding:11px 13px;font-weight:900}.primary{background:var(--g);color:#fff}.secondary{background:#e6ece9}.danger{background:#fee4e2;color:var(--red)}.block{width:100%}.row{display:grid;grid-template-columns:34px 1fr 90px;gap:8px;align-items:center;margin-bottom:8px}.rule{display:grid;grid-template-columns:1fr 90px 46px;gap:8px;margin-bottom:8px}.total{display:grid;grid-template-columns:1fr 100px;gap:8px;align-items:center;margin-bottom:8px}.no{height:32px;width:32px;border-radius:50%;display:grid;place-items:center;background:#e3f1e8;color:var(--g);font-weight:900}.ok{padding:10px;border-radius:10px;background:#dcfae6;border:1px solid #86d49f;color:#0d5d35;font-weight:800}.muted{font-size:12px;color:#6b7280}.switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.switch button{border:2px solid transparent;border-radius:10px;padding:11px;font-weight:900}.switch button.active{border-color:var(--g);background:#dff4e8}.groups{display:grid;gap:8px;margin-bottom:12px}.groups button{border:2px solid transparent;border-radius:10px;padding:11px;font-weight:900;background:#e9f1ec}.groups button.active{border-color:var(--g);background:#dff4e8}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:#eef3f0}.chip.done{background:#dff4e8}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}th{background:#f0f4f2}.pos{color:#087443;font-weight:900}.neg{color:var(--red);font-weight:900}.pay{display:flex;justify-content:space-between;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}.row{grid-template-columns:32px 1fr 82px}.rule{grid-template-columns:1fr 80px 42px}nav button{font-size:10px}}
-</style></head><body><header><h1>Golf Oly Pay</h1><p>名簿・組分け・独自ルール・合計ポイント精算</p></header><main><nav><button class="active" data-tab="roster">名簿</button><button data-tab="setup">設定</button><button data-tab="input">入力</button><button data-tab="rules">ルール</button><button data-tab="status">状況</button><button data-tab="settle">精算</button></nav>
-<section id="roster" class="active"><div class="card"><h2>参加者名簿</h2><p class="muted">よく参加する人を事前登録します。</p><div id="rosterList"></div><button class="btn secondary block" id="addRoster">名前を追加</button><button class="btn primary block" style="margin-top:8px" id="saveRoster">名簿を保存</button></div></section>
-<section id="setup"><div class="card"><h2>ゲーム設定</h2><div class="grid g2"><div><label>参加人数</label><select id="playerCount"></select></div><div><label>組数</label><select id="groupCount"></select></div><div><label>1ポイント金額</label><input id="rate" type="number" step=".25"></div><div><label>入力方法</label><select id="mode"><option value="total">合計ポイントのみ</option><option value="detail">ルール別・ホール別</option></select></div></div></div><div class="card"><h2>今回の参加者と組分け</h2><div id="players"></div><div id="groupMsg"></div><button class="btn secondary block" id="autoAssign">均等に組分け</button><button class="btn primary block" style="margin-top:8px" id="saveSetup">設定を保存</button></div></section>
-<section id="input"><div class="switch"><button id="totalBtn" class="active">合計ポイント</button><button id="detailBtn">ルール別入力</button></div><div id="totalArea" class="card"><h2>トータル獲得ポイント</h2><div id="totalList"></div><button class="btn primary block" id="saveTotals">保存</button></div><div id="detailArea" style="display:none"><div id="groupSwitch" class="groups"></div><div class="card"><h2 id="detailTitle"></h2><div id="memberText" class="muted"></div><div class="grid g2" style="margin:10px 0"><button class="btn secondary" id="prev">前へ</button><button class="btn secondary" id="next">次へ</button></div><div id="ruleInputs"></div><button class="btn primary block" id="saveHole">このホールを保存</button></div><div class="card"><div id="chips" class="chips"></div></div></div></section>
-<section id="rules"><div class="card"><h2>独自ルール</h2><p class="muted">例：チップイン5点、バーディー3点、砂一2点。</p><div id="ruleList"></div><button class="btn secondary block" id="addRule">ルール追加</button><button class="btn primary block" style="margin-top:8px" id="saveRules">ルール保存</button></div></section>
-<section id="status"><div class="card"><h2>現在の状況</h2><div style="overflow:auto"><table><thead><tr><th>順位</th><th>組</th><th>名前</th><th>pt</th><th>収支</th></tr></thead><tbody id="statusBody"></tbody></table></div></div></section>
-<section id="settle"><div class="card"><h2>最終収支</h2><div style="overflow:auto"><table><thead><tr><th>組</th><th>名前</th><th>pt</th><th>収支</th></tr></thead><tbody id="balanceBody"></tbody></table></div></div><div class="card"><h2>誰が誰にいくら払うか</h2><div id="payments"></div><button class="btn secondary block" id="copy">結果をコピー</button></div></section>
-</main><script>
-const $=id=>document.getElementById(id),KEY='golfOlyAdvanced2';const D={roster:['前田','田中','鈴木','山田','佐藤','伊藤','高橋','中村'],playerCount:8,groupCount:2,players:['前田','田中','鈴木','山田','佐藤','伊藤','高橋','中村'],groups:[1,1,1,1,2,2,2,2],rate:.5,mode:'total',rules:[{id:'iron',name:'鉄',points:1},{id:'bronze',name:'銅',points:2},{id:'silver',name:'銀',points:3},{id:'gold',name:'金',points:4},{id:'chip',name:'チップイン',points:5}],totals:[0,0,0,0,0,0,0,0],detail:{'1':{},'2':{}}};let s=load(),g=1,h=1;function load(){try{return Object.assign(JSON.parse(JSON.stringify(D)),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{return JSON.parse(JSON.stringify(D))}}function save(){localStorage.setItem(KEY,JSON.stringify(s))}function esc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function money(v){return(v>0?'+':v<0?'-':'')+'$'+Math.abs(v).toFixed(2)}function norm(){while(s.players.length<s.playerCount)s.players.push(s.roster[s.players.length]||'Player '+(s.players.length+1));s.players=s.players.slice(0,s.playerCount);while(s.groups.length<s.playerCount)s.groups.push(1);s.groups=s.groups.slice(0,s.playerCount);while(s.totals.length<s.playerCount)s.totals.push(0);s.totals=s.totals.slice(0,s.playerCount);for(let x=1;x<=s.groupCount;x++)if(!s.detail[x])s.detail[x]={}}function init(){for(let i=2;i<=16;i++)playerCount.innerHTML+=`<option value="${i}">${i}人</option>`;for(let i=1;i<=4;i++)groupCount.innerHTML+=`<option value="${i}">${i}組</option>`;norm();bind();renderAll()}function bind(){document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active');if(b.dataset.tab==='status')renderStatus();if(b.dataset.tab==='settle')renderSettle()});addRoster.onclick=()=>{s.roster.push('');renderRoster()};saveRoster.onclick=()=>{s.roster=[...document.querySelectorAll('.rn')].map(x=>x.value.trim()).filter(Boolean);save();renderPlayers();alert('保存しました')};playerCount.onchange=()=>{s.playerCount=+playerCount.value;norm();auto();renderPlayers()};groupCount.onchange=()=>{s.groupCount=+groupCount.value;norm();auto();renderPlayers();renderGroups()};autoAssign.onclick=()=>{auto();renderPlayers()};saveSetup.onclick=saveSetup;totalBtn.onclick=()=>switchMode('total');detailBtn.onclick=()=>switchMode('detail');saveTotals.onclick=()=>{s.totals=[...document.querySelectorAll('.tp')].map(x=>+x.value||0);save();renderStatus();renderSettle();alert('保存しました')};addRule.onclick=()=>{s.rules.push({id:'r'+Date.now(),name:'新しいルール',points:1});renderRules()};saveRules.onclick=saveRules;prev.onclick=()=>{h=Math.max(1,h-1);renderDetail()};next.onclick=()=>{h=Math.min(18,h+1);renderDetail()};saveHole.onclick=saveHole;copy.onclick=copyResult}function auto(){s.groups=[];let b=Math.floor(s.playerCount/s.groupCount),r=s.playerCount%s.groupCount;for(let x=1;x<=s.groupCount;x++)for(let i=0;i<b+(x<=r?1:0);i++)s.groups.push(x)}function renderAll(){playerCount.value=s.playerCount;groupCount.value=s.groupCount;rate.value=s.rate;mode.value=s.mode;renderRoster();renderPlayers();renderRules();renderTotals();renderGroups();switchMode(s.mode);renderStatus();renderSettle()}function renderRoster(){rosterList.innerHTML=s.roster.map((n,i)=>`<div class="row"><div class="no">${i+1}</div><input class="rn" value="${esc(n)}"><button class="btn danger" onclick="delRoster(${i})">削除</button></div>`).join('')}window.delRoster=i=>{s.roster.splice(i,1);renderRoster()};function renderPlayers(){players.innerHTML='';for(let i=0;i<s.playerCount;i++){let no='<option value="">名前を選択</option>'+s.roster.map(n=>`<option ${s.players[i]===n?'selected':''}>${esc(n)}</option>`).join('');let go='';for(let x=1;x<=s.groupCount;x++)go+=`<option value="${x}" ${s.groups[i]===x?'selected':''}>${x}組</option>`;players.innerHTML+=`<div class="row"><div class="no">${i+1}</div><select class="ps">${no}</select><select class="gs">${go}</select></div>`}groupMsg.innerHTML='<div class="ok">'+Array.from({length:s.groupCount},(_,i)=>`${i+1}組 ${[...document.querySelectorAll('.gs')].filter(x=>+x.value===i+1).length}名`).join('／')+'</div>'}function saveSetup(){s.players=[...document.querySelectorAll('.ps')].map((x,i)=>x.value||'Player '+(i+1));s.groups=[...document.querySelectorAll('.gs')].map(x=>+x.value);s.rate=+rate.value||0;s.mode=mode.value;norm();save();renderTotals();renderGroups();switchMode(s.mode);alert('設定を保存しました')}function renderRules(){ruleList.innerHTML=s.rules.map((r,i)=>`<div class="rule"><input class="rname" value="${esc(r.name)}"><input class="rpts" type="number" value="${r.points}"><button class="btn danger" onclick="delRule(${i})">×</button></div>`).join('')}window.delRule=i=>{s.rules.splice(i,1);renderRules()};function saveRules(){let n=[...document.querySelectorAll('.rname')],p=[...document.querySelectorAll('.rpts')];s.rules=n.map((x,i)=>({id:s.rules[i]?.id||'r'+Date.now()+i,name:x.value||'ルール'+(i+1),points:+p[i].value||0}));save();renderDetail();alert('保存しました')}function switchMode(m){s.mode=m;totalBtn.classList.toggle('active',m==='total');detailBtn.classList.toggle('active',m==='detail');totalArea.style.display=m==='total'?'block':'none';detailArea.style.display=m==='detail'?'block':'none';if(m==='detail')renderDetail()}function renderTotals(){totalList.innerHTML=s.players.map((n,i)=>`<div class="total"><div><b>${esc(n)}</b><div class="muted">${s.groups[i]}組</div></div><input class="tp" type="number" value="${s.totals[i]||0}"></div>`).join('')}function members(x){return s.groups.map((v,i)=>v===x?i:null).filter(v=>v!==null)}function renderGroups(){groupSwitch.innerHTML='';groupSwitch.style.gridTemplateColumns=`repeat(${s.groupCount},1fr)`;for(let x=1;x<=s.groupCount;x++){let b=document.createElement('button');b.textContent=x+'組';if(x===g)b.classList.add('active');b.onclick=()=>{g=x;renderGroups();renderDetail()};groupSwitch.appendChild(b)}}function opts(sel=''){return '<option value="">なし</option>'+members(g).map(i=>`<option value="${i}" ${String(i)===String(sel)?'selected':''}>${esc(s.players[i])}</option>`).join('')}function renderDetail(){detailTitle.textContent=`${g}組・${h}H`;memberText.textContent=members(g).map(i=>s.players[i]).join('、');let rec=s.detail[g]?.[h]||{};ruleInputs.innerHTML=s.rules.map(r=>`<div class="card" style="padding:10px"><label>${esc(r.name)}（${r.points}pt）</label><select class="dr" data-id="${r.id}">${opts(rec[r.id]??'')}</select></div>`).join('');chips.innerHTML='';for(let x=1;x<=18;x++){let b=document.createElement('button');b.className='chip'+(s.detail[g]?.[x]?' done':'');b.textContent=x+'H';b.onclick=()=>{h=x;renderDetail()};chips.appendChild(b)}}function saveHole(){let rec={};document.querySelectorAll('.dr').forEach(x=>rec[x.dataset.id]=x.value);s.detail[g][h]=rec;save();renderDetail();alert('保存しました')}function points(){if(s.mode==='total')return s.totals.slice(0,s.playerCount);let p=Array(s.playerCount).fill(0);for(let x=1;x<=s.groupCount;x++)Object.values(s.detail[x]||{}).forEach(rec=>s.rules.forEach(r=>{let i=rec[r.id];if(i!==''&&i!==undefined)p[+i]+=r.points}));return p}function calc(){let p=points(),n=s.playerCount,b=p.map((v,i)=>(v*(n-1)-p.reduce((a,x,j)=>a+(j===i?0:x),0))*s.rate);return{p,b}}function renderStatus(){let{p,b}=calc(),r=s.players.map((n,i)=>({n,i,g:s.groups[i],p:p[i],b:b[i]})).sort((a,z)=>z.b-a.b);statusBody.innerHTML=r.map((x,i)=>`<tr><td>${i+1}</td><td>${x.g}</td><td>${esc(x.n)}</td><td>${x.p}</td><td class="${x.b>=0?'pos':'neg'}">${money(x.b)}</td></tr>`).join('')}function pay(b){let c=[],d=[];b.forEach((x,i)=>{x=Math.round(x*100)/100;if(x>.009)c.push({i,a:x});else if(x<-.009)d.push({i,a:-x})});c.sort((a,z)=>z.a-a.a);d.sort((a,z)=>z.a-a.a);let r=[],i=0,j=0;while(i<c.length&&j<d.length){let a=Math.min(c[i].a,d[j].a);r.push({f:d[j].i,t:c[i].i,a});c[i].a-=a;d[j].a-=a;if(c[i].a<.01)i++;if(d[j].a<.01)j++}return r}function renderSettle(){let{p,b}=calc();balanceBody.innerHTML=s.players.map((n,i)=>`<tr><td>${s.groups[i]}</td><td>${esc(n)}</td><td>${p[i]}</td><td class="${b[i]>=0?'pos':'neg'}">${money(b[i])}</td></tr>`).join('');let q=pay(b);payments.innerHTML=q.length?q.map(x=>`<div class="pay"><span><b>${esc(s.players[x.f])}</b> → <b>${esc(s.players[x.t])}</b></span><b>${money(x.a)}</b></div>`).join(''):'<div class="ok">支払いなし</div>'}async function copyResult(){let{p,b}=calc(),q=pay(b),t='Golf Oly Pay\n\n';s.players.forEach((n,i)=>t+=`${s.groups[i]}組 ${n}: ${p[i]}pt / ${money(b[i])}\n`);t+='\n支払い\n';q.forEach(x=>t+=`${s.players[x.f]} → ${s.players[x.t]}: ${money(x.a)}\n`);try{await navigator.clipboard.writeText(t);alert('コピーしました')}catch{prompt('コピーしてください',t)}}init();
-</script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Golf Oly Pay">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<title>Golf Oly Pay</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f7f5;color:#1f2937}
+header{background:#0f5132;color:#fff;padding:18px 16px}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:13px}
+main{max-width:900px;margin:auto;padding:12px}
+nav{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px}
+nav button{border:0;border-radius:10px;padding:10px 2px;font-weight:800;background:#e5ece8;font-size:11px}
+nav button.active{background:#0f5132;color:white}
+section{display:none}section.active{display:block}
+.card{background:white;border:1px solid #dce5df;border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}
+label{display:block;font-weight:800;font-size:13px;margin-bottom:5px}
+input,select,button{font:inherit}input,select{width:100%;padding:11px;border-radius:10px;border:1px solid #ccd8d1;background:#fff;box-sizing:border-box}
+.btn{border:0;border-radius:11px;padding:12px 14px;font-weight:900}.primary{background:#0f5132;color:#fff}.secondary{background:#e6ece9}.danger{background:#fee4e2;color:#b42318}.block{width:100%}
+.row{display:grid;grid-template-columns:34px 1fr 82px;gap:8px;align-items:center;margin-bottom:8px}
+.no{height:32px;width:32px;border-radius:50%;display:grid;place-items:center;background:#e3f1e8;color:#0f5132;font-weight:900}
+.note{padding:10px 12px;border-radius:10px;background:#fff4ce;border:1px solid #efd26d;font-size:13px}
+.ok{padding:10px 12px;border-radius:10px;background:#dcfae6;border:1px solid #86d49f;color:#0d5d35;font-weight:800}
+.linkbox{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#eef7f1;border:1px solid #b7ddc4;border-radius:12px;padding:12px;margin-bottom:12px}
+.rule{display:grid;grid-template-columns:1fr 90px 48px;gap:8px;margin-bottom:8px}
+.point{display:grid;grid-template-columns:1fr 100px;gap:8px;align-items:center;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 6px;border-bottom:1px solid #dce5df;text-align:left}
+.pos{color:#087443;font-weight:900}.neg{color:#b42318;font-weight:900}.pay{display:flex;justify-content:space-between;padding:11px;border:1px solid #dce5df;border-radius:11px;margin-bottom:8px}
+.muted{color:#6b7280;font-size:12px}
+@media(max-width:650px){.g2{grid-template-columns:1fr}.row{grid-template-columns:32px 1fr 78px}nav button{font-size:10px}}
+</style>
+</head>
+<body>
+<header><h1>Golf Oly Pay</h1><p>名簿から参加者を選択し、全員分を自動精算</p></header>
+<main>
+<nav>
+<button class="active" data-tab="roster">名簿</button>
+<button data-tab="setup">参加者</button>
+<button data-tab="points">ポイント</button>
+<button data-tab="rules">ルール</button>
+<button data-tab="status">状況</button>
+<button data-tab="settle">精算</button>
+</nav>
+
+<section id="roster" class="active">
+<div class="card">
+<h2>参加者名簿</h2>
+<p class="muted">よく一緒にプレーする人を登録します。</p>
+<div id="rosterList"></div>
+<button class="btn secondary block" id="addRoster">名前を追加</button>
+<button class="btn primary block" style="margin-top:10px" id="saveRoster">名簿を保存して参加者選択へ</button>
+</div>
+</section>
+
+<section id="setup">
+<div class="linkbox">
+<div><strong>名前が見つからない場合</strong><div class="muted">名簿ページで追加できます。</div></div>
+<button class="btn secondary" id="openRoster">名簿を編集</button>
+</div>
+<div class="card">
+<h2>ゲーム設定</h2>
+<div class="grid g2">
+<div><label>参加人数</label><select id="playerCount"></select></div>
+<div><label>組数</label><select id="groupCount"></select></div>
+<div><label>1ポイントの金額（USD）</label><input id="rate" type="number" min="0" step="0.25"></div>
+</div>
+</div>
+<div class="card">
+<h2>今回の参加者</h2>
+<p class="muted">各欄を押して、名簿から名前を選択してください。</p>
+<div id="playerList"></div>
+<div id="groupMessage"></div>
+<button class="btn secondary block" id="autoAssign">人数を均等に組分け</button>
+<button class="btn primary block" style="margin-top:10px" id="saveSetup">参加者と組分けを保存</button>
+</div>
+</section>
+
+<section id="points">
+<div class="card">
+<h2>トータル獲得ポイント</h2>
+<div id="pointList"></div>
+<button class="btn primary block" id="savePoints">ポイントを保存して精算</button>
+</div>
+</section>
+
+<section id="rules">
+<div class="card">
+<h2>独自ルール</h2>
+<p class="muted">チップイン、バーディー、砂一などを自由に登録できます。</p>
+<div id="ruleList"></div>
+<button class="btn secondary block" id="addRule">ルールを追加</button>
+<button class="btn primary block" style="margin-top:10px" id="saveRules">ルールを保存</button>
+</div>
+</section>
+
+<section id="status">
+<div class="card">
+<h2>現在の状況</h2>
+<div style="overflow:auto"><table><thead><tr><th>順位</th><th>組</th><th>名前</th><th>pt</th><th>収支</th></tr></thead><tbody id="statusBody"></tbody></table></div>
+</div>
+</section>
+
+<section id="settle">
+<div class="card">
+<h2>最終収支</h2>
+<div style="overflow:auto"><table><thead><tr><th>組</th><th>名前</th><th>pt</th><th>収支</th></tr></thead><tbody id="balanceBody"></tbody></table></div>
+</div>
+<div class="card">
+<h2>誰が誰にいくら払うか</h2>
+<div id="payments"></div>
+<button class="btn secondary block" id="copyResult">結果をコピー</button>
+</div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),KEY="golfOlyRosterLinkedV2";
+const defaults={
+ roster:["前田","田中","鈴木","山田","佐藤","伊藤","高橋","中村"],
+ playerCount:8,groupCount:2,
+ players:["前田","田中","鈴木","山田","佐藤","伊藤","高橋","中村"],
+ groups:[1,1,1,1,2,2,2,2],rate:.5,totalPoints:[0,0,0,0,0,0,0,0],
+ rules:[{name:"鉄",points:1},{name:"銅",points:2},{name:"銀",points:3},{name:"金",points:4},{name:"チップイン",points:5}]
+};
+let st=load();
+
+function load(){try{return Object.assign(JSON.parse(JSON.stringify(defaults)),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return JSON.parse(JSON.stringify(defaults))}}
+function save(){localStorage.setItem(KEY,JSON.stringify(st))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function money(v){return (v>0?"+":v<0?"-":"")+"$"+Math.abs(v).toFixed(2)}
+function go(tab){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll("section").forEach(s=>s.classList.toggle("active",s.id===tab));if(tab==="status")renderStatus();if(tab==="settle")renderSettle()}
+function normalize(){st.players=st.players.slice(0,st.playerCount);while(st.players.length<st.playerCount)st.players.push(st.roster[st.players.length]||`Player ${st.players.length+1}`);st.groups=st.groups.slice(0,st.playerCount);while(st.groups.length<st.playerCount)st.groups.push(1);st.totalPoints=st.totalPoints.slice(0,st.playerCount);while(st.totalPoints.length<st.playerCount)st.totalPoints.push(0)}
+function autoAssign(){st.groups=[];const base=Math.floor(st.playerCount/st.groupCount),rem=st.playerCount%st.groupCount;for(let g=1;g<=st.groupCount;g++)for(let i=0;i<base+(g<=rem?1:0);i++)st.groups.push(g);normalize()}
+
+function init(){
+ for(let i=2;i<=16;i++)$("playerCount").innerHTML+=`<option value="${i}">${i}人</option>`;
+ for(let i=1;i<=4;i++)$("groupCount").innerHTML+=`<option value="${i}">${i}組</option>`;
+ normalize();bind();renderAll();
+}
+function bind(){
+ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.tab));
+ $("openRoster").onclick=()=>go("roster");
+ $("addRoster").onclick=()=>{st.roster.push("");renderRoster()};
+ $("saveRoster").onclick=saveRoster;
+ $("playerCount").onchange=()=>{st.playerCount=Number($("playerCount").value);normalize();autoAssign();renderPlayers()};
+ $("groupCount").onchange=()=>{st.groupCount=Number($("groupCount").value);autoAssign();renderPlayers()};
+ $("autoAssign").onclick=()=>{autoAssign();renderPlayers()};
+ $("saveSetup").onclick=saveSetup;
+ $("savePoints").onclick=savePoints;
+ $("addRule").onclick=()=>{st.rules.push({name:"新しいルール",points:1});renderRules()};
+ $("saveRules").onclick=saveRules;
+ $("copyResult").onclick=copyResult;
+}
+function renderAll(){
+ $("playerCount").value=st.playerCount;$("groupCount").value=st.groupCount;$("rate").value=st.rate;
+ renderRoster();renderPlayers();renderPoints();renderRules();renderStatus();renderSettle();
+}
+function renderRoster(){
+ const w=$("rosterList");w.innerHTML="";
+ st.roster.forEach((n,i)=>w.innerHTML+=`<div class="row"><div class="no">${i+1}</div><input class="rosterName" value="${esc(n)}"><button class="btn danger" onclick="removeRoster(${i})">削除</button></div>`);
+}
+window.removeRoster=i=>{st.roster.splice(i,1);renderRoster()};
+function saveRoster(){
+ st.roster=[...document.querySelectorAll(".rosterName")].map(x=>x.value.trim()).filter(Boolean);
+ save();renderPlayers();alert("名簿を保存しました。");go("setup");
+}
+function renderPlayers(){
+ const w=$("playerList");w.innerHTML="";
+ for(let i=0;i<st.playerCount;i++){
+  const names='<option value="">名前を選択</option>'+st.roster.map(n=>`<option value="${esc(n)}" ${st.players[i]===n?"selected":""}>${esc(n)}</option>`).join("");
+  let groups="";for(let g=1;g<=st.groupCount;g++)groups+=`<option value="${g}" ${st.groups[i]===g?"selected":""}>${g}組</option>`;
+  w.innerHTML+=`<div class="row"><div class="no">${i+1}</div><select class="playerSelect">${names}</select><select class="groupSelect">${groups}</select></div>`;
+ }
+ document.querySelectorAll(".groupSelect").forEach(x=>x.onchange=groupMessage);groupMessage();
+}
+function groupMessage(){const gs=[...document.querySelectorAll(".groupSelect")].map(x=>Number(x.value));$("groupMessage").innerHTML=`<div class="ok">${Array.from({length:st.groupCount},(_,i)=>`${i+1}組 ${gs.filter(g=>g===i+1).length}名`).join("／")}</div>`}
+function saveSetup(){
+ st.players=[...document.querySelectorAll(".playerSelect")].map((x,i)=>x.value||`Player ${i+1}`);
+ st.groups=[...document.querySelectorAll(".groupSelect")].map(x=>Number(x.value));
+ if(new Set(st.players).size!==st.players.length){alert("同じ参加者が重複しています。");return}
+ st.rate=Number($("rate").value)||0;save();renderPoints();alert("参加者を保存しました。");go("points");
+}
+function renderPoints(){
+ const w=$("pointList");w.innerHTML="";
+ st.players.forEach((n,i)=>w.innerHTML+=`<div class="point"><div><strong>${esc(n)}</strong><div class="muted">${st.groups[i]}組</div></div><input class="pointValue" type="number" value="${st.totalPoints[i]||0}"></div>`);
+}
+function savePoints(){st.totalPoints=[...document.querySelectorAll(".pointValue")].map(x=>Number(x.value)||0);save();renderStatus();renderSettle();go("settle")}
+function renderRules(){
+ const w=$("ruleList");w.innerHTML="";
+ st.rules.forEach((r,i)=>w.innerHTML+=`<div class="rule"><input class="ruleName" value="${esc(r.name)}"><input class="rulePoint" type="number" value="${r.points}"><button class="btn danger" onclick="removeRule(${i})">×</button></div>`);
+}
+window.removeRule=i=>{st.rules.splice(i,1);renderRules()};
+function saveRules(){const n=[...document.querySelectorAll(".ruleName")],p=[...document.querySelectorAll(".rulePoint")];st.rules=n.map((x,i)=>({name:x.value.trim()||`ルール${i+1}`,points:Number(p[i].value)||0}));save();alert("ルールを保存しました。")}
+function calc(){const pts=st.totalPoints.slice(0,st.playerCount),n=st.playerCount;const bal=pts.map((p,i)=>(p*(n-1)-pts.reduce((s,x,j)=>s+(j===i?0:x),0))*st.rate);return{pts,bal}}
+function renderStatus(){const {pts,bal}=calc();const rows=st.players.map((n,i)=>({n,g:st.groups[i],p:pts[i],b:bal[i]})).sort((a,b)=>b.b-a.b);$("statusBody").innerHTML=rows.map((r,k)=>`<tr><td>${k+1}</td><td>${r.g}</td><td>${esc(r.n)}</td><td>${r.p}</td><td class="${r.b>=0?"pos":"neg"}">${money(r.b)}</td></tr>`).join("")}
+function payments(bal){const c=[],d=[];bal.forEach((x,i)=>{x=Math.round(x*100)/100;if(x>.009)c.push({i,a:x});else if(x<-.009)d.push({i,a:-x})});c.sort((a,b)=>b.a-a.a);d.sort((a,b)=>b.a-a.a);const out=[];let i=0,j=0;while(i<c.length&&j<d.length){const a=Math.min(c[i].a,d[j].a);out.push({f:d[j].i,t:c[i].i,a});c[i].a-=a;d[j].a-=a;if(c[i].a<.01)i++;if(d[j].a<.01)j++}return out}
+function renderSettle(){const {pts,bal}=calc();$("balanceBody").innerHTML=st.players.map((n,i)=>`<tr><td>${st.groups[i]}</td><td>${esc(n)}</td><td>${pts[i]}</td><td class="${bal[i]>=0?"pos":"neg"}">${money(bal[i])}</td></tr>`).join("");const p=payments(bal);$("payments").innerHTML=p.length?p.map(x=>`<div class="pay"><span><strong>${esc(st.players[x.f])}</strong> → <strong>${esc(st.players[x.t])}</strong></span><strong>${money(x.a)}</strong></div>`).join(""):'<div class="ok">支払いはありません。</div>'}
+async function copyResult(){const {pts,bal}=calc(),p=payments(bal);let t="Golf Oly Pay\n\n";st.players.forEach((n,i)=>t+=`${st.groups[i]}組 ${n}: ${pts[i]}pt / ${money(bal[i])}\n`);t+="\n支払い\n";p.forEach(x=>t+=`${st.players[x.f]} → ${st.players[x.t]}: ${money(x.a)}\n`);try{await navigator.clipboard.writeText(t);alert("コピーしました。")}catch{prompt("コピーしてください",t)}}
+init();
+</script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));</script>
+</body>
+</html>
